@@ -675,10 +675,14 @@ async def chat_message(request: Request, current_user: User = Depends(get_curren
     text = (body.get("message") or body.get("text") or "").strip() if isinstance(body, dict) else ""
     if not text or len(text) > 2000:
         raise HTTPException(status_code=422, detail="message must be 1-2000 chars")
+    # Optional language selector override: only en/ta/hi allowed; otherwise auto-detect.
+    lang_override = (body.get("language") or "").strip().lower() if isinstance(body, dict) else ""
+    if lang_override not in ("en", "ta", "hi"):
+        lang_override = None
     if not _chat_rate_ok(str(current_user.id)):
         raise HTTPException(status_code=429, detail="Rate limit exceeded. Please try again shortly.")
     database = await get_database()
-    out = await chat_answer(str(current_user.id), text, current_user, database, analysis_engine)
+    out = await chat_answer(str(current_user.id), text, current_user, database, analysis_engine, language_override=lang_override)
     await database.chat_messages.insert_many([
         {"user_id": current_user.id, "role": "user", "text": text, "language": out["language"], "intent": out["intent"], "created_at": datetime.utcnow()},
         {"user_id": current_user.id, "role": "assistant", "text": out["response"], "language": out["language"], "intent": out["intent"], "created_at": datetime.utcnow()},

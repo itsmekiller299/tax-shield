@@ -20,9 +20,20 @@ const QUICK_ACTIONS = [
   'Summarize my finances',
 ];
 
+type LangSel = 'auto' | 'en' | 'ta' | 'hi';
+
+const LANG_OPTIONS: { value: LangSel; label: string }[] = [
+  { value: 'auto', label: 'Auto' },
+  { value: 'en', label: 'English' },
+  { value: 'ta', label: 'தமிழ்' },
+  { value: 'hi', label: 'हिन्दी' },
+];
+
 const langLabel: Record<string, string> = {
   en: 'English', ta: 'தமிழ்', hi: 'हिन्दी', 'ta-mix': 'Tamil + English', 'hi-mix': 'Hindi + English',
 };
+
+const REC_LANG: Record<LangSel, string> = { auto: 'ta-IN', en: 'en-IN', ta: 'ta-IN', hi: 'hi-IN' };
 
 function langToVoice(lang?: string): string {
   if (lang?.startsWith('ta')) return 'ta-IN';
@@ -40,6 +51,13 @@ export function AssistantChatPanel() {
   const [muted, setMuted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [heard, setHeard] = useState('');
+  const [langSel, setLangSel] = useState<LangSel>(() => {
+    if (typeof window !== 'undefined') {
+      const v = window.localStorage.getItem('assistant-lang');
+      if (v === 'en' || v === 'ta' || v === 'hi') return v;
+    }
+    return 'auto';
+  });
   const recRef = useRef<any>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -61,13 +79,13 @@ export function AssistantChatPanel() {
     try {
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text.slice(0, 500));
-      u.lang = langToVoice(lang);
+      u.lang = langToVoice(langSel !== 'auto' ? langSel : lang);
       setMic('RESPONDING');
       u.onend = () => setMic((s) => (s === 'RESPONDING' ? 'IDLE' : s));
       u.onerror = () => setMic('IDLE');
       window.speechSynthesis.speak(u);
     } catch { setMic('IDLE'); }
-  }, [muted]);
+  }, [muted, langSel]);
 
   const send = useCallback(async (raw: string, viaVoice = false) => {
     const text = raw.trim();
@@ -77,7 +95,7 @@ export function AssistantChatPanel() {
     setMessages((m) => [...m, { role: 'user', text }]);
     setInput('');
     try {
-      const out = await api.chatMessage(text);
+      const out = await api.chatMessage(text, langSel === 'auto' ? undefined : langSel);
       setMessages((m) => [...m, { role: 'assistant', text: out.response, language: out.language, navigate_to: out.navigate_to }]);
       if (viaVoice || mic === 'PROCESSING') speak(out.response, out.language);
       else setMic('IDLE');
@@ -92,7 +110,7 @@ export function AssistantChatPanel() {
       setBusy(false);
       if (!viaVoice) setMic((s) => (s === 'PROCESSING' ? 'IDLE' : s));
     }
-  }, [busy, mic, speak]);
+  }, [busy, mic, speak, langSel]);
 
   const toggleMic = useCallback(() => {
     const SR: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -109,11 +127,11 @@ export function AssistantChatPanel() {
     try {
       const rec = new SR();
       recRef.current = rec;
-      rec.lang = 'ta-IN';
+      rec.lang = REC_LANG[langSel];
       rec.interimResults = false;
       rec.maxAlternatives = 1;
-      // Cycle ta-IN -> hi-IN -> en-IN is handled by auto-detection server-side;
-      // start with Tamil since it covers code-mix well, fallback on error below.
+      // Server auto-detects the spoken language; the selector (if set) picks
+      // the recognition and response language instead.
       setMic('LISTENING');
       setMicError('');
       setHeard('');
@@ -133,15 +151,34 @@ export function AssistantChatPanel() {
       setMic('ERROR');
       setMicError("Sorry, I couldn't start voice input. Please try again.");
     }
-  }, [mic, send]);
+  }, [mic, send, langSel]);
 
   const micHint = mic === 'LISTENING' ? 'Listening...' : mic === 'PROCESSING' ? 'Understanding...' : mic === 'RESPONDING' ? 'Speaking...' : mic === 'ERROR' ? (micError || 'Error — try again') : 'Tap to speak (தமிழ் / हिन्दी / English)';
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)] bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="px-5 py-4 border-b border-gray-100">
-        <h1 className="text-lg font-semibold text-gray-900">TaxShield AI Assistant</h1>
-        <p className="text-sm text-gray-500">Your tax-readiness companion</p>
+      <div className="px-5 py-4 border-b border-gray-100 flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-lg font-semibold text-gray-900">TaxShield AI Assistant</h1>
+          <p className="text-sm text-gray-500">Your tax-readiness companion</p>
+        </div>
+        <label className="flex items-center gap-2 text-xs text-gray-500 flex-shrink-0">
+          Language
+          <select
+            value={langSel}
+            onChange={(e) => {
+              const v = e.target.value as LangSel;
+              setLangSel(v);
+              try { window.localStorage.setItem('assistant-lang', v); } catch {}
+            }}
+            className="text-sm text-gray-700 border border-gray-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            aria-label="Assistant language"
+          >
+            {LANG_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </label>
       </div>
 
       <div className="px-4 pt-3 flex flex-wrap gap-2" aria-label="Quick actions">

@@ -263,8 +263,8 @@ class ApiClient {
     return normalize(response.data);
   }
 
-  async chatMessage(message: string) {
-    const response = await this.client.post('/chat/message', { message });
+  async chatMessage(message: string, language?: string) {
+    const response = await this.client.post('/chat/message', language ? { message, language } : { message });
     return normalize(response.data);
   }
 
