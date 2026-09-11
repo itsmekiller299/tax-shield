@@ -1,0 +1,7 @@
+scenario_rule_id,scenario_type,change_description,deterministic_effect,rule_type
+SCEN-R-001,salary_increase,Increase salary income,Recalculate slab-tax exposure and documentation expectations.,PROJECT_DETERMINISTIC
+SCEN-R-002,additional_freelance_income,Add freelance income,Assess business/profession record and payment readiness.,PROJECT_DETERMINISTIC
+SCEN-R-003,additional_investment,Add investment,Assess investment statement and capital-gain evidence needs.,PROJECT_DETERMINISTIC
+SCEN-R-004,capital_gain_event,Add capital-gain event,Assess holding and contract-note evidence workflow.,PROJECT_DETERMINISTIC
+SCEN-R-005,tax_saving_investment,Add deduction-linked investment,Assess evidence readiness before deduction claim.,PROJECT_DETERMINISTIC
+SCEN-R-006,additional_loan_interest,Add home-loan interest,Assess interest-certificate evidence workflow.,PROJECT_DETERMINISTIC

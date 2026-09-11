@@ -1,0 +1,548 @@
+{
+  "test_suite": {
+    "expected_tax_rule_reference": {
+      "advance_tax_threshold_total_income": 1000000,
+      "cess_surcharge": "4% cess on (base - 87A rebate + surcharge); surcharge 10/15/25% above 50L/1Cr/2Cr (capped 25% new regime); 87A rebate old<=500k/new<=700k",
+      "freelance_invoice_threshold": 50000,
+      "readiness_weights": {
+        "actionability": 0.1,
+        "compliance": 0.25,
+        "documentation": 0.3,
+        "reconciliation": 0.2,
+        "tax_accuracy": 0.15
+      },
+      "slabs": [
+        [
+          250000,
+          0.0
+        ],
+        [
+          500000,
+          0.05
+        ],
+        [
+          750000,
+          0.1
+        ],
+        [
+          1000000,
+          0.15
+        ],
+        [
+          1250000,
+          0.2
+        ],
+        [
+          1500000,
+          0.25
+        ],
+        [
+          999999999,
+          0.3
+        ]
+      ]
+    },
+    "name": "TaxShield Realistic User Persona E2E Test Suite",
+    "purpose": "Production-level end-to-end validation of TaxShield tax-readiness workflow across 3 realistic personas",
+    "test_cases": [
+      {
+        "deductions": [
+          {
+            "amount": 100000,
+            "category": "retirement",
+            "description": "PPF contribution FY 2024-25",
+            "financial_year": "2024-25",
+            "verification_status": "complete"
+          },
+          {
+            "amount": 50000,
+            "category": "insurance",
+            "description": "ELSS investment (80C)",
+            "financial_year": "2024-25",
+            "verification_status": "complete"
+          },
+          {
+            "amount": 25000,
+            "category": "medical",
+            "description": "Health insurance premium (80D)",
+            "financial_year": "2024-25",
+            "verification_status": "complete"
+          }
+        ],
+        "documents": [
+          {
+            "document_type": "form16",
+            "financial_year": "2024-25",
+            "linked_event": "salary FY 2024-25",
+            "verification_status": "complete"
+          },
+          {
+            "document_type": "investment_statement",
+            "financial_year": "2024-25",
+            "linked_event": "PPF + ELSS",
+            "verification_status": "complete"
+          },
+          {
+            "document_type": "expense_bill",
+            "financial_year": "2024-25",
+            "linked_event": "health insurance premium",
+            "verification_status": "complete"
+          }
+        ],
+        "evidence": [
+          {
+            "available": true,
+            "event": "salary",
+            "expected": "form16"
+          },
+          {
+            "available": true,
+            "event": "ppf_elss",
+            "expected": "investment_statement"
+          },
+          {
+            "available": true,
+            "event": "health_insurance",
+            "expected": "expense_bill"
+          }
+        ],
+        "expected_results": {
+          "deductions_verified_total": 175000,
+          "income_total": 925000,
+          "outstanding_tax": 39000,
+          "readiness_status": "high (all evidence complete, no high-risk obligations expected)",
+          "reconciliation_status": "matched (AIS salary 900000 == internal 900000; 26AS TDS 45000 == internal 45000)",
+          "risk_count_expected": "0 high-risk; possible medium advance-tax only if engine threshold crossed (925000 < 1000000, so none)",
+          "tax_liability": 39000,
+          "tax_paid": 0,
+          "taxable_income": 750000
+        },
+        "expected_workflow": [
+          "signup_login",
+          "profile_creation",
+          "salary_transactions",
+          "interest_transaction",
+          "deductions_with_evidence",
+          "document_upload",
+          "evidence_check",
+          "ais_26as_reconciliation",
+          "tax_calculation",
+          "obligations_deadlines",
+          "readiness_verification",
+          "scenario_compare",
+          "report_generation"
+        ],
+        "form26as_records": [
+          {
+            "amount_paid": 900000,
+            "section": "192",
+            "source": "Employer Pvt Ltd",
+            "tds": 45000
+          }
+        ],
+        "id": "PERSONA_001",
+        "investments": [
+          {
+            "amount": 100000,
+            "category": "retirement",
+            "investment_type": "ppf",
+            "name": "PPF FY 2024-25",
+            "purchase_date": "2024-04-15"
+          },
+          {
+            "amount": 50000,
+            "category": "elss",
+            "investment_type": "elss",
+            "name": "ELSS SIP FY 2024-25",
+            "purchase_date": "2024-06-01"
+          }
+        ],
+        "name": "Middle Income Salaried Individual",
+        "negative_tests": [
+          "invalid_login_rejected",
+          "negative_amount_rejected",
+          "missing_required_field_validation",
+          "unauthorized_api_401",
+          "duplicate_registration_rejected"
+        ],
+        "profile": {
+          "age": 38,
+          "email_prefix": "persona1_middle",
+          "employment_type": "salaried",
+          "financial_year": "2024-25",
+          "name": "Persona One",
+          "tax_jurisdiction": "India"
+        },
+        "tax_payments": []
+      },
+      {
+        "ais_records": [
+          {
+            "amount": 600000,
+            "source": "Employer Pvt Ltd",
+            "type": "salary"
+          },
+          {
+            "amount": 240000,
+            "source": "Tenant",
+            "type": "rental"
+          },
+          {
+            "amount": 280000,
+            "source": "Mutual Fund Redemption",
+            "type": "capital_gains_sale_value"
+          },
+          {
+            "amount": 30000,
+            "source": "Bank",
+            "type": "interest"
+          },
+          {
+            "amount": 20000,
+            "source": "Listed equity",
+            "type": "dividend"
+          }
+        ],
+        "capital_gains": [
+          {
+            "asset": "SBI Bluechip Fund",
+            "gain": 80000,
+            "purchase_value": 200000,
+            "sale_value": 280000
+          }
+        ],
+        "deductions": [
+          {
+            "amount": 60000,
+            "category": "insurance",
+            "description": "Term insurance + ELSS",
+            "financial_year": "2024-25",
+            "verification_status": "needs_review"
+          },
+          {
+            "amount": 40000,
+            "category": "retirement",
+            "description": "PPF",
+            "financial_year": "2024-25",
+            "verification_status": "complete"
+          }
+        ],
+        "documents": [
+          {
+            "document_type": "form16",
+            "financial_year": "2024-25",
+            "linked_event": "salary",
+            "verification_status": "complete"
+          },
+          {
+            "document_type": "rent_receipt",
+            "financial_year": "2024-25",
+            "linked_event": "rental income",
+            "verification_status": "missing"
+          }
+        ],
+        "evidence": [
+          {
+            "available": true,
+            "event": "salary",
+            "expected": "form16"
+          },
+          {
+            "available": false,
+            "event": "rental",
+            "expected": "rent_receipt",
+            "risk": "medium obligation expected"
+          },
+          {
+            "available": false,
+            "event": "mutual_fund_sale",
+            "expected": "investment_statement",
+            "risk": "high obligation expected unless uploaded"
+          }
+        ],
+        "expected_results": {
+          "capital_gain": 80000,
+          "deductions_verified_total": 40000,
+          "income_total": 970000,
+          "outstanding_tax": 37080,
+          "readiness_status": "medium (missing rental + capital-gains evidence lowers documentation score; fixing them must raise score)",
+          "reconciliation_status": "partial mismatch intentionally: AIS dividend 22000 vs internal 20000 (diff 2000) must surface as review item",
+          "risk_count_expected": ">=2 (rental missing-doc medium, capital-gains missing-doc high, freelance n/a)",
+          "tax_liability": 67080,
+          "tax_paid": 30000,
+          "taxable_income": 930000
+        },
+        "expected_workflow": [
+          "signup_login",
+          "profile_creation",
+          "multi_source_transactions",
+          "investment_buy_sell_link",
+          "capital_gain_verification",
+          "deductions_partial_evidence",
+          "missing_evidence_risk_check",
+          "ais_mismatch_detection",
+          "form26as_match",
+          "tax_calculation",
+          "scenario_compare",
+          "readiness_increase_after_fix",
+          "report_generation"
+        ],
+        "form26as_records": [
+          {
+            "amount_paid": 600000,
+            "section": "192",
+            "source": "Employer",
+            "tds": 30000
+          },
+          {
+            "amount_paid": 240000,
+            "section": "194I",
+            "source": "Tenant",
+            "tds": 24000
+          }
+        ],
+        "id": "PERSONA_002",
+        "investments": [
+          {
+            "gain_loss": 80000,
+            "investment_type": "mutual_fund",
+            "name": "SBI Bluechip Fund",
+            "purchase_date": "2022-05-01",
+            "purchase_value": 200000,
+            "sale_date": "2024-11-10",
+            "sale_value": 280000
+          }
+        ],
+        "name": "Low/Moderate Tax Multi-Source Individual",
+        "negative_tests": [
+          "orphan_capital_gain_rejected",
+          "orphan_document_prevented",
+          "invalid_category_rejected",
+          "unauthorized_cross_user_access_403",
+          "negative_amount_rejected"
+        ],
+        "profile": {
+          "age": 45,
+          "email_prefix": "persona2_multi",
+          "employment_type": "salaried",
+          "financial_year": "2024-25",
+          "name": "Persona Two",
+          "tax_jurisdiction": "India"
+        },
+        "tax_payments": [
+          {
+            "amount": 30000,
+            "date": "2024-09-15",
+            "type": "tds_salary"
+          }
+        ],
+        "transactions_summary": {
+          "bank_interest": 30000,
+          "capital_gains": 80000,
+          "dividends": 20000,
+          "rental": 240000,
+          "salary": 600000
+        }
+      },
+      {
+        "ais_records": [
+          {
+            "amount": 2800000,
+            "source": "Business receipts",
+            "type": "business"
+          },
+          {
+            "amount": 600000,
+            "source": "Tenant",
+            "type": "rental"
+          },
+          {
+            "amount": 850000,
+            "source": "Equity sale",
+            "type": "capital_gains_sale_value"
+          },
+          {
+            "amount": 75000,
+            "source": "Bank",
+            "type": "interest"
+          },
+          {
+            "amount": 50000,
+            "source": "Listed equity",
+            "type": "dividend"
+          }
+        ],
+        "capital_gains": [
+          {
+            "asset": "Listed equity",
+            "gain": 350000,
+            "purchase_value": 500000,
+            "sale_value": 850000
+          }
+        ],
+        "deductions": [
+          {
+            "amount": 150000,
+            "category": "retirement",
+            "description": "80C basket",
+            "financial_year": "2024-25",
+            "verification_status": "complete"
+          },
+          {
+            "amount": 100000,
+            "category": "loan_interest",
+            "description": "Business loan interest",
+            "financial_year": "2024-25",
+            "verification_status": "needs_review"
+          }
+        ],
+        "documents": [
+          {
+            "document_type": "investment_statement",
+            "financial_year": "2024-25",
+            "linked_event": "equity purchase+sale",
+            "verification_status": "complete"
+          },
+          {
+            "document_type": "rent_receipt",
+            "financial_year": "2024-25",
+            "linked_event": "rental",
+            "verification_status": "complete"
+          },
+          {
+            "document_type": "loan_certificate",
+            "financial_year": "2024-25",
+            "linked_event": "business loan interest",
+            "verification_status": "missing"
+          }
+        ],
+        "evidence": [
+          {
+            "available": true,
+            "event": "business_turnover",
+            "expected": "expense_bill"
+          },
+          {
+            "available": true,
+            "event": "rental",
+            "expected": "rent_receipt"
+          },
+          {
+            "available": true,
+            "event": "equity_sale",
+            "expected": "investment_statement"
+          },
+          {
+            "available": false,
+            "event": "loan_interest",
+            "expected": "loan_certificate",
+            "risk": "medium verification obligation expected"
+          }
+        ],
+        "expected_results": {
+          "capital_gain": 350000,
+          "deductions_verified_total": 150000,
+          "income_total": 3875000,
+          "outstanding_tax": 739200,
+          "readiness_status": "medium-high (advance-tax + verification obligations present; must remain performant)",
+          "reconciliation_status": "matched except controlled: AIS interest 78000 vs internal 75000 (diff 3000) must surface",
+          "risk_count_expected": ">=2 (advance-tax medium on 3.875M income, loan-interest verification medium, multi-source reporting medium)",
+          "tax_liability": 889200,
+          "tax_paid": 150000,
+          "taxable_income": 3725000
+        },
+        "expected_workflow": [
+          "signup_login",
+          "profile_creation",
+          "business_turnover_transactions",
+          "rental_interest_dividend",
+          "investment_sale_gain_link",
+          "deductions_with_partial_evidence",
+          "tds_payments",
+          "obligations_deadlines",
+          "ais_26as_reconciliation",
+          "risk_action_loop",
+          "readiness_verification",
+          "scenario_stress",
+          "large_data_performance",
+          "report_generation"
+        ],
+        "form26as_records": [
+          {
+            "amount_paid": 600000,
+            "section": "194I",
+            "source": "Tenant",
+            "tds": 60000
+          },
+          {
+            "amount_paid": 850000,
+            "section": "194",
+            "source": "Broker",
+            "tds": 85000
+          },
+          {
+            "amount_paid": 75000,
+            "section": "193",
+            "source": "Bank",
+            "tds": 7500
+          }
+        ],
+        "id": "PERSONA_003",
+        "investments": [
+          {
+            "gain_loss": 350000,
+            "investment_type": "stocks",
+            "name": "Listed Equity Portfolio",
+            "purchase_date": "2021-08-01",
+            "purchase_value": 500000,
+            "sale_date": "2024-12-20",
+            "sale_value": 850000
+          },
+          {
+            "investment_type": "fixed_deposit",
+            "name": "Business Reserve FD",
+            "purchase_date": "2024-04-01",
+            "purchase_value": 500000
+          }
+        ],
+        "name": "High-Income Business Owner",
+        "negative_tests": [
+          "invalid_login_rejected",
+          "duplicate_record_handled",
+          "invalid_fk_rejected",
+          "cross_user_isolation",
+          "partial_payment_tracking",
+          "post_deadline_payment_handling"
+        ],
+        "profile": {
+          "age": 48,
+          "email_prefix": "persona3_biz",
+          "employment_type": "business",
+          "financial_year": "2024-25",
+          "name": "Persona Three",
+          "tax_jurisdiction": "India"
+        },
+        "tax_payments": [
+          {
+            "amount": 60000,
+            "date": "2024-06-15",
+            "type": "advance_tax_installment_1"
+          },
+          {
+            "amount": 90000,
+            "date": "2024-09-15",
+            "type": "advance_tax_installment_2"
+          }
+        ],
+        "transactions_summary": {
+          "bank_interest": 75000,
+          "business": 2800000,
+          "capital_gains": 350000,
+          "dividends": 50000,
+          "rental": 600000
+        }
+      }
+    ],
+    "version": "1.0"
+  }
+}

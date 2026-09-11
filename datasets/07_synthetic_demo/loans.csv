@@ -1,0 +1,8 @@
+﻿"data_type","synthetic_source","loan_id","user_id","loan_type","interest_paid","evidence_status","property_use","deduction_rule_id","evidence_id"
+"synthetic","generated_for_testing","LOAN0007","USR0007","home_loan","102000","linked","self_occupied","DED-008","EV-007"
+"synthetic","generated_for_testing","LOAN0014","USR0014","home_loan","109000","linked","self_occupied","DED-008","EV-007"
+"synthetic","generated_for_testing","LOAN0021","USR0021","home_loan","116000","linked","self_occupied","DED-008","EV-007"
+"synthetic","generated_for_testing","LOAN0028","USR0028","home_loan","123000","linked","self_occupied","DED-008","EV-007"
+"synthetic","generated_for_testing","LOAN0035","USR0035","home_loan","130000","linked","self_occupied","DED-008","EV-007"
+"synthetic","generated_for_testing","LOAN0042","USR0042","home_loan","137000","linked","self_occupied","DED-008","EV-007"
+"synthetic","generated_for_testing","LOAN0049","USR0049","home_loan","144000","linked","self_occupied","DED-008","EV-007"

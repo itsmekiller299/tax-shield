@@ -1,0 +1,6 @@
+﻿"rule_id","component","weight","calculation","score_range","source_dataset","rule_type"
+"READY-001","documentation","0.3","verified_or_uploaded_expected_documents / expected_documents","0_to_100","documents.csv;user_evidence.csv","PROJECT_DETERMINISTIC"
+"READY-002","compliance","0.25","completed_obligations / known_obligations","0_to_100","obligations.csv;tax_payments.csv","PROJECT_DETERMINISTIC"
+"READY-003","reconciliation","0.2","matched_reconciliation_records / reconciliable_records","0_to_100","reconciliation.csv;tax_information_records.csv","PROJECT_DETERMINISTIC"
+"READY-004","tax_accuracy","0.15","passed_tax_assessments / tax_assessments","0_to_100","tax_assessments.csv","PROJECT_DETERMINISTIC"
+"READY-005","actionability","0.1","completed_actions / total_actions","0_to_100","actions.csv;risks.csv","PROJECT_DETERMINISTIC"

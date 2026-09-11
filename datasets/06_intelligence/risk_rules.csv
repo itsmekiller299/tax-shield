@@ -1,0 +1,8 @@
+risk_id,risk_type,trigger_condition,severity,impact,recommended_action,source_rule,rule_type
+RISK-001,missing_document,No expected supporting document is linked to an event.,HIGH,Readiness evidence gap,Add or request the supporting document.,evidence_requirements.csv,PROJECT_DETERMINISTIC
+RISK-002,tds_evidence_missing,Income event has TDS but no Form 16/16A/26AS record.,HIGH,Tax-credit reconciliation risk,Obtain certificate or reconcile to AIS/26AS.,evidence_requirements.csv,PROJECT_DETERMINISTIC
+RISK-003,deadline_approaching,Known deadline is within 14 days and obligation is open.,MEDIUM,Compliance risk,Complete filing or payment action.,project_configuration,PROJECT_DETERMINISTIC
+RISK-004,deadline_overdue,Known deadline is before today and obligation is open.,HIGH,Late compliance risk,Review late consequence and complete action.,project_configuration,PROJECT_DETERMINISTIC
+RISK-005,reconciliation_mismatch,Reported amount differs from linked evidence amount.,HIGH,Potential tax reporting mismatch,Review source statement and correct record.,project_configuration,PROJECT_DETERMINISTIC
+RISK-006,deduction_evidence_missing,Deduction record lacks linked supporting document.,MEDIUM,Unsupported deduction claim risk,Attach evidence or remove claim.,evidence_requirements.csv,PROJECT_DETERMINISTIC
+RISK-007,payment_shortfall,Expected tax payment exceeds linked payment total.,HIGH,Payment readiness risk,Review advance/self-assessment payment.,project_configuration,PROJECT_DETERMINISTIC
